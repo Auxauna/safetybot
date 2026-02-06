@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { getSites, Site } from "@/lib/mockData";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { getSites, getRecentInspections, Site } from "@/lib/mockData";
 import { formatDistanceToNow } from "@/lib/dateUtils";
 import {
   Building2,
@@ -23,9 +24,28 @@ import Link from "next/link";
 export default function SitesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingSite, setEditingSite] = useState<string | null>(null);
+  const [deletingSite, setDeletingSite] = useState<Site | null>(null);
 
   // Use mock data - in a real app this would come from a database
   const sites = getSites();
+  const inspections = getRecentInspections();
+
+  // Count inspections per site
+  const inspectionCounts = new Map<string, { count: number; lastDate: number }>();
+  for (const inspection of inspections) {
+    const existing = inspectionCounts.get(inspection.siteId);
+    if (existing) {
+      existing.count++;
+      if (inspection.startedAt > existing.lastDate) {
+        existing.lastDate = inspection.startedAt;
+      }
+    } else {
+      inspectionCounts.set(inspection.siteId, {
+        count: 1,
+        lastDate: inspection.startedAt,
+      });
+    }
+  }
 
   const handleCreate = async (data: {
     name: string;
@@ -55,8 +75,9 @@ export default function SitesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    // Demo mode - show alert
-    alert("In demo mode, sites cannot be deleted.");
+    // Demo mode - close dialog
+    console.log("Would delete site:", id);
+    setDeletingSite(null);
   };
 
   return (
@@ -92,19 +113,35 @@ export default function SitesPage() {
           <SitesEmpty onAdd={() => setShowForm(true)} />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sites.map((site) => (
-              <SiteCard
-                key={site._id}
-                site={site}
-                isEditing={editingSite === site._id}
-                onEdit={() => setEditingSite(site._id)}
-                onCancelEdit={() => setEditingSite(null)}
-                onUpdate={(data) => handleUpdate(site._id, data)}
-                onDelete={() => handleDelete(site._id)}
-              />
-            ))}
+            {sites.map((site) => {
+              const inspectionInfo = inspectionCounts.get(site._id);
+              return (
+                <SiteCard
+                  key={site._id}
+                  site={site}
+                  inspectionCount={inspectionInfo?.count || 0}
+                  lastInspectionDate={inspectionInfo?.lastDate}
+                  isEditing={editingSite === site._id}
+                  onEdit={() => setEditingSite(site._id)}
+                  onCancelEdit={() => setEditingSite(null)}
+                  onUpdate={(data) => handleUpdate(site._id, data)}
+                  onDelete={() => setDeletingSite(site)}
+                />
+              );
+            })}
           </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <ConfirmDialog
+          isOpen={!!deletingSite}
+          title="Delete Site"
+          message={`Are you sure you want to delete "${deletingSite?.name}"? This action cannot be undone.`}
+          confirmLabel="Delete"
+          variant="danger"
+          onConfirm={() => { if (deletingSite) handleDelete(deletingSite._id); }}
+          onCancel={() => setDeletingSite(null)}
+        />
       </div>
     </AppShell>
   );
@@ -253,6 +290,8 @@ function SiteForm({
 
 function SiteCard({
   site,
+  inspectionCount,
+  lastInspectionDate,
   isEditing,
   onEdit,
   onCancelEdit,
@@ -260,6 +299,8 @@ function SiteCard({
   onDelete,
 }: {
   site: Site;
+  inspectionCount: number;
+  lastInspectionDate?: number;
   isEditing: boolean;
   onEdit: () => void;
   onCancelEdit: () => void;
@@ -379,15 +420,26 @@ function SiteCard({
         <p className="mt-3 text-sm text-gray-500 line-clamp-2">{site.notes}</p>
       )}
 
-      <div className="mt-4 pt-4 border-t flex items-center justify-between">
-        <span className="text-xs text-gray-400">
-          Added {formatDistanceToNow(site.createdAt)}
-        </span>
+      <div className="mt-4 pt-4 border-t">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-gray-500">
+            {inspectionCount > 0 ? (
+              <>
+                {inspectionCount} inspection{inspectionCount !== 1 ? "s" : ""}
+                {lastInspectionDate && (
+                  <> · Last {formatDistanceToNow(lastInspectionDate)}</>
+                )}
+              </>
+            ) : (
+              "No inspections yet"
+            )}
+          </span>
+        </div>
         <Link
           href={`/inspect/new?siteId=${site._id}`}
-          className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
         >
-          Start Inspection →
+          Start Inspection
         </Link>
       </div>
     </div>

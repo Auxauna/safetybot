@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { AppShell } from "@/components/layout/AppShell";
+import { DemoBanner } from "@/components/ui/DemoBanner";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import {
   getInspectionWithSite,
   getPhotosForInspection,
@@ -19,10 +22,12 @@ import {
   Building2,
   CheckCircle2,
   ArrowLeft,
+  ArrowRight,
   Sparkles,
   AlertCircle,
   Image as ImageIcon,
   Loader2,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -301,8 +306,8 @@ export default function InspectionPage() {
 
   if (!inspection) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
+      <AppShell>
+        <div className="max-w-4xl mx-auto text-center py-12">
           <p className="text-gray-600">Inspection not found</p>
           <Link
             href="/"
@@ -311,7 +316,7 @@ export default function InspectionPage() {
             Go back to dashboard
           </Link>
         </div>
-      </div>
+      </AppShell>
     );
   }
 
@@ -325,6 +330,13 @@ export default function InspectionPage() {
   if (inspection.status === "completed") {
     return null;
   }
+
+  // Count total pending findings for progress
+  const totalFindings = photos.reduce((acc, p) => acc + (p.aiFindings?.length || 0), 0);
+  const reviewedFindings = photos.reduce(
+    (acc, p) => acc + (p.aiFindings?.filter((f) => f.status !== "pending").length || 0),
+    0
+  );
 
   const handleReviewFinding = (
     photoId: string,
@@ -383,26 +395,24 @@ export default function InspectionPage() {
   const unclearPhotos = photos.filter((p) => p.overallSeverity === "unclear" || !p.overallSeverity);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Top bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-gray-400" />
-              <span className="font-medium text-gray-900 truncate max-w-[200px]">
-                {inspection.siteName}
-              </span>
-              <span className="hidden sm:inline text-sm text-gray-500">
-                • Review Findings
-              </span>
-            </div>
+    <AppShell>
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          items={[
+            { label: "Inspections", href: "/inspect" },
+            { label: inspection.siteName || "Review" },
+          ]}
+        />
+
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Review Findings</h1>
+            <p className="text-gray-500 mt-1 flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              {inspection.siteName}
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -420,7 +430,7 @@ export default function InspectionPage() {
                 </span>
               )}
               <span className="text-gray-500">
-                {stats.reviewed} / {stats.total} reviewed
+                {reviewedFindings} / {totalFindings} reviewed
               </span>
             </div>
 
@@ -432,32 +442,27 @@ export default function InspectionPage() {
               {isCompleting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
+                  Generating...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Complete Review</span>
+                  <FileText className="w-4 h-4" />
+                  <span className="hidden sm:inline">Generate Report</span>
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </div>
         </div>
-      </header>
 
-      <main className="pt-14 pb-8">
-        <div className="max-w-5xl mx-auto p-4 sm:p-6">
-          {/* Demo banner */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-4 mb-6 text-white flex items-center gap-3">
-            <Sparkles className="w-5 h-5 flex-shrink-0" />
-            <p className="text-sm">
-              <strong>Demo Mode:</strong> Click the photo cards to expand and review AI-detected findings.
-              Confirm or reject each finding, then click "Complete Review" to generate a report.
-            </p>
-          </div>
+        {/* Demo banner */}
+        <DemoBanner>
+          <strong>Demo Mode:</strong> Click photo cards to expand and review AI-detected findings.
+          Confirm or reject each finding, then click &quot;Generate Report&quot; to see results.
+        </DemoBanner>
 
-          {/* Stats summary */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        {/* Stats summary */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-white rounded-xl p-4 border">
               <div className="text-3xl font-bold text-gray-900">{stats.total}</div>
               <div className="text-sm text-gray-500 mt-1">Total Photos</div>
@@ -474,114 +479,113 @@ export default function InspectionPage() {
               <div className="text-3xl font-bold text-green-600">{stats.compliant}</div>
               <div className="text-sm text-green-600 mt-1">Compliant</div>
             </div>
-          </div>
-
-          {/* Critical findings */}
-          {criticalPhotos.length > 0 && (
-            <section className="mb-8">
-              <h2 className="text-lg font-bold text-red-700 flex items-center gap-2 mb-4">
-                <AlertCircle className="w-5 h-5" />
-                Critical Issues ({criticalPhotos.length})
-              </h2>
-              <div className="space-y-4">
-                {criticalPhotos.map((photo) => (
-                  <PhotoReviewCard
-                    key={photo._id}
-                    photo={photo}
-                    isExpanded={expandedPhoto === photo._id}
-                    onToggle={() =>
-                      setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
-                    }
-                    onReviewFinding={handleReviewFinding}
-                    onConfirmAll={handleConfirmAll}
-                    onRejectAll={handleRejectAll}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Warnings */}
-          {warningPhotos.length > 0 && (
-            <section className="mb-8">
-              <h2 className="text-lg font-bold text-amber-700 flex items-center gap-2 mb-4">
-                <AlertTriangle className="w-5 h-5" />
-                Warnings ({warningPhotos.length})
-              </h2>
-              <div className="space-y-4">
-                {warningPhotos.map((photo) => (
-                  <PhotoReviewCard
-                    key={photo._id}
-                    photo={photo}
-                    isExpanded={expandedPhoto === photo._id}
-                    onToggle={() =>
-                      setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
-                    }
-                    onReviewFinding={handleReviewFinding}
-                    onConfirmAll={handleConfirmAll}
-                    onRejectAll={handleRejectAll}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Compliant */}
-          {compliantPhotos.length > 0 && (
-            <section className="mb-8">
-              <h2 className="text-lg font-bold text-green-700 flex items-center gap-2 mb-4">
-                <CheckCircle2 className="w-5 h-5" />
-                Compliant ({compliantPhotos.length})
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {compliantPhotos.map((photo) => (
-                  <div
-                    key={photo._id}
-                    className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative group cursor-pointer"
-                    onClick={() =>
-                      setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
-                    }
-                  >
-                    <img
-                      src={photo.url}
-                      alt={photo.filename}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                      <CheckCircle2 className="w-8 h-8 text-white drop-shadow-lg" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Unclear / Needs review */}
-          {unclearPhotos.length > 0 && (
-            <section className="mb-8">
-              <h2 className="text-lg font-bold text-gray-700 flex items-center gap-2 mb-4">
-                <ImageIcon className="w-5 h-5" />
-                Needs Manual Review ({unclearPhotos.length})
-              </h2>
-              <div className="space-y-4">
-                {unclearPhotos.map((photo) => (
-                  <PhotoReviewCard
-                    key={photo._id}
-                    photo={photo}
-                    isExpanded={expandedPhoto === photo._id}
-                    onToggle={() =>
-                      setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
-                    }
-                    onReviewFinding={handleReviewFinding}
-                    onConfirmAll={handleConfirmAll}
-                    onRejectAll={handleRejectAll}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
         </div>
-      </main>
-    </div>
+
+        {/* Critical findings */}
+        {criticalPhotos.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-red-700 flex items-center gap-2 mb-4">
+              <AlertCircle className="w-5 h-5" />
+              Critical Issues ({criticalPhotos.length})
+            </h2>
+            <div className="space-y-4">
+              {criticalPhotos.map((photo) => (
+                <PhotoReviewCard
+                  key={photo._id}
+                  photo={photo}
+                  isExpanded={expandedPhoto === photo._id}
+                  onToggle={() =>
+                    setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
+                  }
+                  onReviewFinding={handleReviewFinding}
+                  onConfirmAll={handleConfirmAll}
+                  onRejectAll={handleRejectAll}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Warnings */}
+        {warningPhotos.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-amber-700 flex items-center gap-2 mb-4">
+              <AlertTriangle className="w-5 h-5" />
+              Warnings ({warningPhotos.length})
+            </h2>
+            <div className="space-y-4">
+              {warningPhotos.map((photo) => (
+                <PhotoReviewCard
+                  key={photo._id}
+                  photo={photo}
+                  isExpanded={expandedPhoto === photo._id}
+                  onToggle={() =>
+                    setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
+                  }
+                  onReviewFinding={handleReviewFinding}
+                  onConfirmAll={handleConfirmAll}
+                  onRejectAll={handleRejectAll}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Compliant */}
+        {compliantPhotos.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-green-700 flex items-center gap-2 mb-4">
+              <CheckCircle2 className="w-5 h-5" />
+              Compliant ({compliantPhotos.length})
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {compliantPhotos.map((photo) => (
+                <div
+                  key={photo._id}
+                  className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative group"
+                >
+                  <img
+                    src={photo.url}
+                    alt={photo.filename}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8 text-white drop-shadow-lg" />
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <p className="text-white text-xs font-medium">No issues found</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Unclear / Needs review */}
+        {unclearPhotos.length > 0 && (
+          <section>
+            <h2 className="text-lg font-bold text-gray-700 flex items-center gap-2 mb-4">
+              <ImageIcon className="w-5 h-5" />
+              Needs Manual Review ({unclearPhotos.length})
+            </h2>
+            <div className="space-y-4">
+              {unclearPhotos.map((photo) => (
+                <PhotoReviewCard
+                  key={photo._id}
+                  photo={photo}
+                  isExpanded={expandedPhoto === photo._id}
+                  onToggle={() =>
+                    setExpandedPhoto(expandedPhoto === photo._id ? null : photo._id)
+                  }
+                  onReviewFinding={handleReviewFinding}
+                  onConfirmAll={handleConfirmAll}
+                  onRejectAll={handleRejectAll}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </AppShell>
   );
 }

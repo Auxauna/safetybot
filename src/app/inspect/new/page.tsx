@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DemoBanner } from "@/components/ui/DemoBanner";
 import Link from "next/link";
 
 type UploadStatus = "idle" | "uploading" | "analyzing" | "complete" | "error";
@@ -159,13 +160,10 @@ export default function NewInspectionPage() {
         </div>
 
         {/* Demo banner */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-4 text-white flex items-center gap-3">
-          <Sparkles className="w-5 h-5 flex-shrink-0" />
-          <p className="text-sm">
-            <strong>Demo Mode:</strong> Upload any photos to see the workflow. After simulated analysis,
-            you'll be redirected to the review page with pre-populated demo findings.
-          </p>
-        </div>
+        <DemoBanner>
+          <strong>Demo Mode:</strong> Upload any photos to see the workflow. After simulated analysis,
+          you&apos;ll be redirected to the review page with pre-populated demo findings.
+        </DemoBanner>
 
         {/* Progress indicator when uploading/analyzing */}
         {uploadStatus !== "idle" && (
@@ -295,6 +293,12 @@ export default function NewInspectionPage() {
               </button>
             ))}
           </div>
+          <Link
+            href="/sites"
+            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium mt-2"
+          >
+            + Add a new site
+          </Link>
         </div>
 
         {/* Step 2: Upload Photos */}

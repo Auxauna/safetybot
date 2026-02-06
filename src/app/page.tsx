@@ -48,7 +48,7 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Hero Demo Banner */}
+        {/* Hero Section */}
         <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
           <div className="relative">
@@ -66,11 +66,10 @@ export default function Dashboard() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/inspect/inspection_reviewing"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-blue-700 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 text-white font-medium rounded-lg hover:bg-white/30 transition-colors border border-white/30"
               >
                 <Camera className="w-4 h-4" />
-                Try the Review Workflow
-                <ArrowRight className="w-4 h-4" />
+                Try Demo Workflow
               </Link>
               <Link
                 href="/inspect/inspection_completed/report"
@@ -85,32 +84,40 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            label="Open Findings"
-            value={stats.openFindings}
-            icon={AlertTriangle}
-            variant={stats.openFindings > 0 ? (stats.criticalFindings > 0 ? "critical" : "warning") : "default"}
-          />
-          <StatCard
-            label="Critical Issues"
-            value={stats.criticalFindings}
-            icon={AlertCircle}
-            variant={stats.criticalFindings > 0 ? "critical" : "default"}
-            subtext={stats.criticalFindings > 0 ? "Needs immediate action" : undefined}
-          />
-          <StatCard
-            label="Due This Week"
-            value={stats.dueThisWeek}
-            icon={Clock}
-            variant={stats.dueThisWeek > 0 ? "warning" : "default"}
-          />
-          <StatCard
-            label="Overdue Actions"
-            value={stats.overdueActions}
-            icon={ClipboardCheck}
-            variant={stats.overdueActions > 0 ? "critical" : "success"}
-            subtext={stats.overdueActions === 0 ? "All on track" : "Follow up required"}
-          />
+          <Link href="/findings?status=open">
+            <StatCard
+              label="Open Findings"
+              value={stats.openFindings}
+              icon={AlertTriangle}
+              variant={stats.openFindings > 0 ? (stats.criticalFindings > 0 ? "critical" : "warning") : "default"}
+            />
+          </Link>
+          <Link href="/findings?severity=critical">
+            <StatCard
+              label="Critical Issues"
+              value={stats.criticalFindings}
+              icon={AlertCircle}
+              variant={stats.criticalFindings > 0 ? "critical" : "default"}
+              subtext={stats.criticalFindings > 0 ? "Needs immediate action" : undefined}
+            />
+          </Link>
+          <Link href="/findings?status=assigned">
+            <StatCard
+              label="Due This Week"
+              value={stats.dueThisWeek}
+              icon={Clock}
+              variant={stats.dueThisWeek > 0 ? "warning" : "default"}
+            />
+          </Link>
+          <Link href="/findings?status=open">
+            <StatCard
+              label="Overdue Actions"
+              value={stats.overdueActions}
+              icon={ClipboardCheck}
+              variant={stats.overdueActions > 0 ? "critical" : "success"}
+              subtext={stats.overdueActions === 0 ? "All on track" : "Follow up required"}
+            />
+          </Link>
         </div>
 
         {/* Recent Inspections */}

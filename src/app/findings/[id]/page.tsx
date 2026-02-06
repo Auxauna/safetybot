@@ -7,9 +7,11 @@ import {
   DEMO_SITE_FINDINGS,
   DEMO_CORRECTIVE_ACTIONS,
   getSiteById,
+  getPhotosForInspection,
   SiteFinding,
   CorrectiveAction,
 } from "@/lib/mockData";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import {
   formatDateTime,
   formatDueDate,
@@ -51,6 +53,15 @@ export default function FindingDetailPage() {
   const site = finding ? getSiteById(finding.siteId) : null;
   const correctiveActions = DEMO_CORRECTIVE_ACTIONS.filter(
     (a) => a.findingId === findingId
+  );
+
+  // Get related photo evidence
+  const photos = finding ? getPhotosForInspection(finding.inspectionId) : [];
+  const relatedPhoto = photos.find(
+    (p) =>
+      p.aiFindings?.some(
+        (f) => f.category === finding?.category || f.title === finding?.title
+      )
   );
 
   if (!finding) {
@@ -133,27 +144,26 @@ export default function FindingDetailPage() {
   return (
     <AppShell>
       <div className="max-w-3xl mx-auto space-y-6">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          items={[
+            { label: "Findings", href: "/findings" },
+            { label: finding.title },
+          ]}
+        />
+
         {/* Header */}
-        <div>
-          <Link
-            href="/findings"
-            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-3"
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">{finding.title}</h1>
+          <span
+            className={cn(
+              "text-sm font-medium px-3 py-1 rounded-full flex-shrink-0",
+              severity.bg,
+              severity.text
+            )}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Findings
-          </Link>
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-bold text-gray-900">{finding.title}</h1>
-            <span
-              className={cn(
-                "text-sm font-medium px-3 py-1 rounded-full flex-shrink-0",
-                severity.bg,
-                severity.text
-              )}
-            >
-              {severity.label}
-            </span>
-          </div>
+            {severity.label}
+          </span>
         </div>
 
         {/* Status progress */}
@@ -236,6 +246,34 @@ export default function FindingDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Photo Evidence */}
+        {relatedPhoto && (
+          <div className="bg-white rounded-xl border p-5">
+            <h3 className="font-semibold text-gray-900 mb-3">Photo Evidence</h3>
+            <div className="flex gap-4">
+              <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                <img
+                  src={relatedPhoto.url}
+                  alt="Evidence"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-500">
+                  From inspection on {new Date(relatedPhoto.uploadedAt).toLocaleDateString()}
+                </p>
+                <Link
+                  href={`/inspect/${finding.inspectionId}`}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium mt-2 inline-flex items-center gap-1"
+                >
+                  View full inspection
+                  <ArrowLeft className="w-3 h-3 rotate-180" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Details */}
         <div className="bg-white rounded-xl border p-5 space-y-4">
@@ -616,8 +654,9 @@ function AssignActionForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-xl max-w-md w-full p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-xl max-w-md w-full p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Assign Corrective Action
         </h3>

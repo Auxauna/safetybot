@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
+import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { getSiteFindings, getSites, SiteFinding } from "@/lib/mockData";
 import { formatDistanceToNow, formatDate } from "@/lib/dateUtils";
 import { getCategoryLabel } from "@/lib/constructionCategories";
@@ -22,11 +24,37 @@ type StatusFilter = "all" | "open" | "assigned" | "resolved";
 type SeverityFilter = "all" | "critical" | "warning";
 
 export default function FindingsPage() {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
-  const [siteFilter, setSiteFilter] = useState<string>("all");
+  const searchParams = useSearchParams();
+
+  // Initialize filters from URL params
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    (searchParams.get("status") as StatusFilter) || "all"
+  );
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(
+    (searchParams.get("severity") as SeverityFilter) || "all"
+  );
+  const [siteFilter, setSiteFilter] = useState<string>(
+    searchParams.get("site") || "all"
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Update filters when URL params change
+  useEffect(() => {
+    const status = searchParams.get("status") as StatusFilter;
+    const severity = searchParams.get("severity") as SeverityFilter;
+    const site = searchParams.get("site");
+
+    if (status && ["all", "open", "assigned", "resolved"].includes(status)) {
+      setStatusFilter(status);
+    }
+    if (severity && ["all", "critical", "warning"].includes(severity)) {
+      setSeverityFilter(severity);
+    }
+    if (site) {
+      setSiteFilter(site);
+    }
+  }, [searchParams]);
 
   const findings = getSiteFindings();
   const sites = getSites();
@@ -99,15 +127,18 @@ export default function FindingsPage() {
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "sm:hidden flex items-center gap-2 px-4 py-2 border rounded-lg font-medium transition-colors",
+              "sm:hidden flex items-center gap-2 px-4 py-2 border rounded-lg font-medium transition-colors relative",
               showFilters || severityFilter !== "all" || siteFilter !== "all"
                 ? "bg-blue-50 border-blue-200 text-blue-700"
                 : "bg-white text-gray-700"
             )}
           >
             <Filter className="w-4 h-4" />
+            Filters
             {(severityFilter !== "all" || siteFilter !== "all") && (
-              <span className="w-2 h-2 bg-blue-600 rounded-full" />
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                {(severityFilter !== "all" ? 1 : 0) + (siteFilter !== "all" ? 1 : 0)}
+              </span>
             )}
           </button>
 
@@ -274,16 +305,7 @@ function FindingRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="font-medium text-gray-900 truncate">{finding.title}</p>
-          <span
-            className={cn(
-              "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
-              finding.severity === "critical"
-                ? "bg-red-100 text-red-700"
-                : "bg-orange-100 text-orange-700"
-            )}
-          >
-            {finding.severity}
-          </span>
+          <SeverityBadge severity={finding.severity} size="sm" />
         </div>
         <p className="text-sm text-gray-500 truncate mt-0.5">
           {finding.description}

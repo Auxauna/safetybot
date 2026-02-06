@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { ComplianceDonut } from "@/components/ui/ComplianceDonut";
@@ -21,13 +22,18 @@ import {
   Image as ImageIcon,
   Shield,
   Sparkles,
+  Download,
+  Share2,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { DemoBanner } from "@/components/ui/DemoBanner";
 
 export default function InspectionReportPage() {
   const params = useParams();
   const inspectionId = params.id as string;
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const inspection = getInspectionWithSite(inspectionId);
   const photos = getPhotosForInspection(inspectionId);
@@ -101,24 +107,65 @@ export default function InspectionReportPage() {
               Safety Inspection Report
             </h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 px-4 py-2 border rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
             >
-              <Printer className="w-4 h-4" />
-              Print Report
+              <Download className="w-4 h-4" />
+              Export
+              <ChevronDown className="w-4 h-4" />
             </button>
+
+            {showExportMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowExportMenu(false)}
+                />
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg border shadow-lg z-20">
+                  <button
+                    onClick={() => {
+                      window.print();
+                      setShowExportMenu(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Print Report
+                  </button>
+                  <button
+                    onClick={() => {
+                      window.print();
+                      setShowExportMenu(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t"
+                  >
+                    <Download className="w-4 h-4" />
+                    Save as PDF
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      setShowExportMenu(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-t"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Copy Link
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* Demo banner */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-4 mb-6 text-white flex items-center gap-3 no-print">
-          <Sparkles className="w-5 h-5 flex-shrink-0" />
-          <p className="text-sm">
+        <div className="no-print">
+          <DemoBanner>
             <strong>Demo Report:</strong> This is a sample AI-generated safety inspection report.
             In production, findings would be populated from actual photo analysis.
-          </p>
+          </DemoBanner>
         </div>
 
         {/* Report content - printable area */}
@@ -353,7 +400,7 @@ export default function InspectionReportPage() {
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {positiveFindings.slice(0, 6).map(({ finding, photo }) => (
+                  {positiveFindings.map(({ finding, photo }) => (
                     <div
                       key={`${photo._id}-${finding.id}`}
                       className="bg-green-50 rounded-lg p-3"
@@ -374,11 +421,6 @@ export default function InspectionReportPage() {
                     </div>
                   ))}
                 </div>
-                {positiveFindings.length > 6 && (
-                  <p className="text-sm text-green-700 mt-4 text-center">
-                    +{positiveFindings.length - 6} more positive observations
-                  </p>
-                )}
               </div>
             </div>
           )}
