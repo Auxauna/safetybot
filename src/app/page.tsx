@@ -36,7 +36,7 @@ export default function Dashboard() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Safety Dashboard</h1>
             <p className="text-gray-500 mt-1">
-              AI-powered construction safety inspection platform
+              AI-powered elevator safety inspection platform
             </p>
           </div>
           <Link
@@ -44,7 +44,7 @@ export default function Dashboard() {
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Camera className="w-4 h-4" />
-            New Inspection
+            New Safety Blitz
           </Link>
         </div>
 
@@ -57,11 +57,11 @@ export default function Dashboard() {
               <span className="text-sm font-medium text-blue-200">AI-Powered Safety Analysis</span>
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              Upload 50 photos. Get a compliance report in 10 minutes.
+              Conduct a Safety Blitz. Get an FPPe report in minutes.
             </h2>
             <p className="text-blue-100 mb-6 max-w-2xl">
-              Walk the job site, snap photos, and let AI do the heavy lifting. Safetybot automatically
-              detects OSHA violations, categorizes findings, and generates professional reports.
+              Walk the branch with your safety team, photograph findings across all FPP categories,
+              and let AI categorize issues, calculate scores, and generate Safety Blitz reports.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
@@ -124,8 +124,8 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl border">
           <div className="p-5 border-b flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-gray-900">Recent Inspections</h3>
-              <p className="text-sm text-gray-500 mt-0.5">AI-analyzed safety inspections</p>
+              <h3 className="font-semibold text-gray-900">Recent Safety Blitz Assessments</h3>
+              <p className="text-sm text-gray-500 mt-0.5">AI-analyzed field safety evaluations</p>
             </div>
             <Link
               href="/inspect"
@@ -202,7 +202,7 @@ export default function Dashboard() {
           <div className="p-5 border-b flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-gray-900">Active Sites</h3>
-              <p className="text-sm text-gray-500 mt-0.5">Construction job sites</p>
+              <p className="text-sm text-gray-500 mt-0.5">Branch locations</p>
             </div>
             <Link
               href="/sites"
@@ -244,8 +244,8 @@ export default function Dashboard() {
                 1
               </div>
               <div>
-                <p className="font-medium text-gray-900">Walk the site</p>
-                <p className="text-sm text-gray-500 mt-0.5">Take 50-100 photos during your inspection</p>
+                <p className="font-medium text-gray-900">Assemble your team</p>
+                <p className="text-sm text-gray-500 mt-0.5">Walk the branch with your safety team</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -253,8 +253,8 @@ export default function Dashboard() {
                 2
               </div>
               <div>
-                <p className="font-medium text-gray-900">Upload photos</p>
-                <p className="text-sm text-gray-500 mt-0.5">Drag and drop your batch of photos</p>
+                <p className="font-medium text-gray-900">Conduct the blitz</p>
+                <p className="text-sm text-gray-500 mt-0.5">Photograph findings across all FPP categories</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -263,7 +263,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="font-medium text-gray-900">AI analyzes</p>
-                <p className="text-sm text-gray-500 mt-0.5">Claude Vision detects hazards automatically</p>
+                <p className="text-sm text-gray-500 mt-0.5">Categorizes findings and calculates FPPe scores</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -271,8 +271,8 @@ export default function Dashboard() {
                 4
               </div>
               <div>
-                <p className="font-medium text-gray-900">Review & export</p>
-                <p className="text-sm text-gray-500 mt-0.5">Confirm findings, generate reports</p>
+                <p className="font-medium text-gray-900">Generate report</p>
+                <p className="text-sm text-gray-500 mt-0.5">Export Safety Blitz report with Road to Zero actions</p>
               </div>
             </div>
           </div>

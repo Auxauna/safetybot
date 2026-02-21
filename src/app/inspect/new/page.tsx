@@ -153,9 +153,9 @@ export default function NewInspectionPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">New Safety Inspection</h1>
+          <h1 className="text-2xl font-bold text-gray-900">New Safety Blitz</h1>
           <p className="text-gray-500 mt-1">
-            Upload your job site photos and let AI analyze them for safety compliance
+            Upload field photos and let AI analyze them for FPP compliance
           </p>
         </div>
 
@@ -240,7 +240,7 @@ export default function NewInspectionPage() {
             >
               {selectedSite ? <CheckCircle2 className="w-5 h-5" /> : "1"}
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Select Job Site</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Select Branch</h2>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -370,7 +370,7 @@ export default function NewInspectionPage() {
               </div>
               <div>
                 <p className="text-lg font-medium text-gray-900">
-                  {isDragging ? "Drop photos here" : "Drop job site photos here"}
+                  {isDragging ? "Drop photos here" : "Drop field inspection photos here"}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">or click to browse</p>
               </div>
@@ -453,7 +453,7 @@ export default function NewInspectionPage() {
                   {selectedSiteData?.name} - {photos.length} photo{photos.length !== 1 ? "s" : ""}
                 </p>
                 <p className="text-white/50 mt-2 text-xs">
-                  AI will scan each photo for safety hazards, PPE compliance, fall protection, and more
+                  AI will scan each photo for FPP deviations, PPE compliance, LOTO, fall protection, and more
                 </p>
               </div>
             </div>
@@ -478,7 +478,7 @@ export default function NewInspectionPage() {
         {photos.length === 0 && selectedSite && uploadStatus === "idle" && (
           <div className="text-center py-8 text-gray-500">
             <Camera className="w-12 h-12 mx-auto text-gray-300" />
-            <p className="mt-3 font-medium">Upload your job site photos</p>
+            <p className="mt-3 font-medium">Upload your field inspection photos</p>
             <p className="text-sm mt-1">
               Drag and drop up to 100 photos, or click to browse
             </p>

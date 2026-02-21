@@ -14,7 +14,7 @@ import {
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Inspections", href: "/inspect", icon: ClipboardCheck },
+  { name: "Safety Blitz", href: "/inspect", icon: ClipboardCheck },
   { name: "Findings", href: "/findings", icon: AlertTriangle },
   { name: "Sites", href: "/sites", icon: Building2 },
 ];
@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New Inspection</span>
+              <span className="hidden sm:inline">New Safety Blitz</span>
             </Link>
           </div>
         </div>
