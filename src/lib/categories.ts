@@ -1,8 +1,9 @@
 /**
  * Safety Categories for Elevator Field Work
  *
- * Based on OSHA standards, ASME A17.1 codes, and industry best practices.
- * These categories are used for AI photo classification and reporting.
+ * Based on FPP (Field Performance Plan) categories used in Safety Blitz assessments.
+ * These categories align with real-world elevator safety audits covering
+ * fall protection, LOTO, hoistway access, electrical, PPE, rigging, and more.
  */
 
 export type CategoryId =
@@ -13,9 +14,13 @@ export type CategoryId =
   | "car_top"
   | "pit"
   | "machine_room"
-  | "rigging"
+  | "hoisting_rigging"
   | "housekeeping"
-  | "signage";
+  | "barricades"
+  | "hoistway_access"
+  | "warehouse"
+  | "mechanical"
+  | "jumpers";
 
 export type AnalysisStatus = "compliant" | "warning" | "critical" | "unclear";
 export type Confidence = "high" | "medium" | "low";
@@ -38,7 +43,8 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
     label: "Fall Protection",
     icon: "shield-alert",
     color: "#EF4444", // red-500
-    description: "Personal fall arrest systems, guardrails, and work at height",
+    description:
+      "Personal fall arrest systems, guardrails, hoistway screening, and work at height",
     keywords: [
       "harness",
       "lanyard",
@@ -47,26 +53,33 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "tie-off",
       "fall arrest",
       "height",
-      "scaffold",
+      "hoistway",
+      "screening",
+      "toe board",
     ],
     lookFor: [
-      "Personal fall arrest systems worn correctly",
-      "Lanyards connected to proper anchor points (not elevator cables)",
-      "Guardrails in place around openings",
-      "Floor holes covered or barricaded",
-      "Workers at height (6ft+) with protection",
-      "Self-retracting lifelines properly attached",
+      "Personal fall arrest systems worn and fitted correctly",
+      "Lanyards connected to proper anchor points",
+      "Adequate screening at hoistway openings",
+      "Guardrails properly installed around openings",
+      "Toe boards in place where required",
+      "No loose material inside hoistway",
+      "Harness properly fitted (snug, no twisted straps)",
+      "Level 2 barriers over hoistway below",
     ],
     violations: [
-      "Working at height without tie-off",
-      "Lanyard present but not connected to anchor",
-      "Using elevator cables as anchor point (prohibited)",
-      "Missing or damaged guardrails",
-      "Uncovered floor/shaft openings",
-      "Improper anchor point selection",
+      "Inadequate screening at hoistway opening",
+      "Hoistway opening secured only with zip ties",
+      "Harness not fit properly",
+      "Exposed hole in hoistway",
+      "No toe board at hoistway edge",
+      "Loose material inside hoistway",
+      "Fall protection used improperly",
+      "Non-removable barricade blocking egress",
+      "Dropped object potential not addressed",
     ],
     whyItMatters:
-      "Falls are the #1 cause of death in construction, accounting for 56% of elevator worker fatalities. Falls into hoistways are particularly deadly.",
+      "Falls are the #1 cause of death in construction and account for a majority of elevator worker fatalities. Falls into hoistways are particularly deadly. Proper screening and fall arrest are critical SIF prevention controls.",
   },
 
   loto: {
@@ -74,7 +87,8 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
     label: "Lockout/Tagout",
     icon: "lock",
     color: "#F97316", // orange-500
-    description: "Energy isolation and control of hazardous energy",
+    description:
+      "Energy isolation, LOTO procedures, Live-Dead-Live testing, and arc flash protection",
     keywords: [
       "lock",
       "tag",
@@ -83,25 +97,35 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "isolation",
       "LOTO",
       "de-energize",
+      "arc flash",
+      "LDL",
+      "meter",
     ],
     lookFor: [
-      "Locks on main disconnects",
-      "Tags with name, date, and reason",
-      "Group lockout devices for multiple workers",
-      "LOTO station/board visible",
-      "Verification of zero energy state",
-      "Written LOTO procedure accessible",
+      "Personal locks on disconnects",
+      "LOTO tags with name, hazard, and contact info",
+      "Live-Dead-Live (LDL) testing achieved",
+      "Correct meter and meter leads used",
+      "One-hand testing technique practiced",
+      "Arc rated gloves and sleeves used",
+      "Insulated mat at controller",
+      "No metallic objects (keys, belt buckles) near energized equipment",
+      "Hasp functional for group lockout",
     ],
     violations: [
-      "No lock on disconnect during work",
-      "Tag only without lock (insufficient)",
-      "Working on energized equipment",
-      "Incomplete tag information",
-      "Removing another person's lock",
-      "Failure to identify all energy sources",
+      "Missing LOTO tags with name, hazard, and contact info",
+      "Multiple employees using only one lock",
+      "Two hands in controller (should be single-hand operation)",
+      "Incorrect meter leads",
+      "No hand hold on disconnect",
+      "Metallic objects not removed (keys hanging, metal belt)",
+      "Hasp won't work or not available",
+      "Lock not accessible when needed",
+      "Shielding to wire hanging by incoming leads",
+      "Arc rated gloves and sleeves not used",
     ],
     whyItMatters:
-      "50%+ of elevator work deaths are caused by failure to de-energize electrical circuits. LOTO is the most critical safety procedure.",
+      "Electrical contact is a leading cause of elevator worker fatalities. Proper LOTO with Live-Dead-Live verification is the most critical safety procedure. Every worker must have their own lock on every disconnect.",
   },
 
   electrical: {
@@ -118,6 +142,7 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "voltage",
       "controller",
       "electrical",
+      "disconnect",
     ],
     lookFor: [
       "Arc flash PPE worn (face shield, gloves, FR clothing)",
@@ -127,6 +152,7 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "Proper grounding",
       "Insulated tools in use",
       "Arc flash labels on equipment",
+      "Single-hand operation near energized parts",
     ],
     violations: [
       "Working on live circuits without proper PPE",
@@ -135,9 +161,10 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "Exposed wiring or damaged insulation",
       "Missing di-electric mat in machine room",
       "Using non-insulated tools near energized parts",
+      "Two hands in controller simultaneously",
     ],
     whyItMatters:
-      "Electrocution accounts for 7% of elevator worker fatalities. Arc flash can cause severe burns and death in milliseconds.",
+      "Electrocution is a significant cause of elevator worker fatalities. Arc flash can cause severe burns and death in milliseconds. Proper PPE and single-hand technique are essential.",
   },
 
   ppe: {
@@ -145,7 +172,8 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
     label: "PPE Compliance",
     icon: "hard-hat",
     color: "#3B82F6", // blue-500
-    description: "Personal protective equipment usage and condition",
+    description:
+      "Personal protective equipment usage, condition, and compliance",
     keywords: [
       "hard hat",
       "glasses",
@@ -155,26 +183,31 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "PPE",
       "helmet",
       "goggles",
+      "arc rated",
+      "cut level",
     ],
     lookFor: [
-      "Hard hat worn correctly (not backwards, straps adjusted)",
-      "Safety glasses or goggles on",
-      "Appropriate gloves for task (cut-resistant, insulated)",
+      "Hard hat worn correctly with chin strap",
+      "Prescription safety glasses worn",
+      "Cut level 4 gloves for appropriate tasks",
+      "Arc rated gloves and sleeves for electrical work",
+      "Proper glove sizes available for all employees",
       "High-visibility vest when required",
       "Steel-toe boots",
-      "Hearing protection in loud areas",
-      "PPE in good condition",
+      "PPE in good condition and properly fitted",
     ],
     violations: [
-      "No hard hat in active work area",
-      "Safety glasses missing or on forehead",
-      "Wrong glove type for task",
-      "Damaged or expired PPE",
-      "Improperly worn PPE",
-      "Missing hi-vis in traffic areas",
+      "Arc rated gloves and sleeves not being used during audits",
+      "Cut level 4 gloves not available or not worn",
+      "Insufficient glove sizes for employees",
+      "Prescription safety glasses missing",
+      "Harness not properly fitted",
+      "Chin strap not used",
+      "PPE program not applied 100% of the time",
+      "Damaged or expired PPE in use",
     ],
     whyItMatters:
-      "Proper PPE can prevent 70% of construction injuries. Head protection is critical when working around overhead hazards and moving equipment.",
+      "Proper PPE is a zero-tolerance requirement. Every worker must have correctly sized and rated PPE for their specific task. Gloves, sleeves, and eye protection prevent the most common injuries.",
   },
 
   car_top: {
@@ -182,7 +215,7 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
     label: "Car Top Safety",
     icon: "box",
     color: "#8B5CF6", // purple-500
-    description: "Elevator car top work procedures and conditions",
+    description: "Elevator car top work procedures, access, and conditions",
     keywords: [
       "car top",
       "elevator",
@@ -199,6 +232,7 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "Guardrails or chains around perimeter",
       "Clearance from overhead equipment verified",
       "Top-of-car operating device (TCOD) in use",
+      "Door not exceeding 6 inches for cartop access",
     ],
     violations: [
       "Riding car top without stop switch verification",
@@ -207,9 +241,10 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "Missing car top guardrails",
       "Poor lighting for work",
       "TCOD not properly engaged",
+      "Cartop access door exceeding 6 inches",
     ],
     whyItMatters:
-      "Car top work combines fall and struck-by hazards. Workers can be crushed by counterweights or fall into the hoistway.",
+      "Car top work combines fall and struck-by hazards. Workers can be crushed by counterweights or fall into the hoistway. Stop switch verification is mandatory before every access.",
   },
 
   pit: {
@@ -256,10 +291,10 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
     ],
     lookFor: [
       "Room clean and organized",
-      "Temperature within range (55-90°F)",
+      "Temperature within range (55-90 F)",
       "Fire extinguisher present and inspected",
       "No unauthorized storage",
-      "Proper clearances maintained (18\" minimum)",
+      "Proper clearances maintained (18 inch minimum)",
       "Di-electric mat at control panels",
       "Door secured and properly labeled",
       "Adequate ventilation",
@@ -277,33 +312,47 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "Machine room conditions affect equipment reliability and worker safety. Overheating can cause equipment failure; clutter creates hazards.",
   },
 
-  rigging: {
-    id: "rigging",
-    label: "Rigging & Hoisting",
+  hoisting_rigging: {
+    id: "hoisting_rigging",
+    label: "Hoisting & Rigging",
     icon: "anchor",
     color: "#6366F1", // indigo-500
-    description: "Slings, wire rope, hoisting equipment, and lifting operations",
-    keywords: ["sling", "rope", "hoist", "rigging", "chain", "lift", "crane"],
+    description:
+      "Slings, wire rope, hoisting equipment, rigging plans, and lifting operations",
+    keywords: [
+      "sling",
+      "rope",
+      "hoist",
+      "rigging",
+      "chain",
+      "lift",
+      "crane",
+      "rigging plan",
+      "softener",
+    ],
     lookFor: [
-      "Slings in good condition (no visible damage)",
+      "Hoisting/rigging plan in place",
+      "Slings in good condition and inspected prior to use",
+      "Softeners on sharp edges",
       "Wire rope inspected (no broken wires, kinks, bird-caging)",
       "Proper rigging configuration for load",
       "Load within rated capacity",
       "Tag lines used for load control",
-      "Rigging hardware in good condition",
       "Qualified rigger present",
+      "Gloves worn during rigging operations",
     ],
     violations: [
-      "Damaged or worn slings in use",
+      "No hoisting/rigging plan",
+      "No gloves during rigging",
+      "Rigging on sharp edge without softener",
+      "Slings not inspected prior to use",
+      "Damaged strap in use",
       "Exceeding working load limit",
       "Improper rigging configuration",
       "No load calculations",
-      "Missing softeners on sharp edges",
-      "Shock loading",
-      "Spliced wire rope (prohibited)",
     ],
     whyItMatters:
-      "Rigging failures cause struck-by fatalities. Wire rope must be inspected daily; slings removed from service when damaged.",
+      "Rigging failures cause struck-by fatalities. Every lift requires a plan, and all rigging equipment must be inspected before each use. Citations can be issued for non-compliance.",
   },
 
   housekeeping: {
@@ -330,34 +379,183 @@ export const SAFETY_CATEGORIES: Record<CategoryId, CategoryDefinition> = {
       "Oily rags not properly stored",
     ],
     whyItMatters:
-      "Poor housekeeping causes slips, trips, and falls - among the most common workplace injuries. It also indicates overall safety culture.",
+      "Poor housekeeping causes slips, trips, and falls and indicates overall safety culture.",
   },
 
-  signage: {
-    id: "signage",
-    label: "Signage & HazCom",
+  barricades: {
+    id: "barricades",
+    label: "Barricades & Signage",
     icon: "alert-triangle",
     color: "#F59E0B", // amber-500
-    description: "Warning signs, labels, barricades, and hazard communication",
-    keywords: ["sign", "label", "barricade", "warning", "tag", "hazard"],
+    description:
+      "Barricading, screening, warning signs, labels, and hazard communication",
+    keywords: [
+      "barricade",
+      "screening",
+      "sign",
+      "label",
+      "warning",
+      "tag",
+      "hazard",
+      "canopy",
+    ],
     lookFor: [
+      "Barricades properly installed at openings",
+      "Screening adequate at hoistway openings",
+      "Canopy in place where required",
       "Warning signs posted appropriately",
-      "Proper barricading around hazards",
       "Equipment labels legible",
       "LOTO tags complete and visible",
-      "Safety data sheets accessible",
       "Inspection tags current",
     ],
     violations: [
+      "Barricades not in place at hoistway",
+      "Inadequate screening at hoistway opening",
+      "No canopy installed where required",
       "Missing warning signage",
-      "No barricades around open hoistway",
       "Illegible or faded labels",
       "Incomplete LOTO tags",
       "Expired inspection tags",
-      "Unlabeled hazardous materials",
     ],
     whyItMatters:
-      "Proper signage and communication prevent accidents by alerting workers to hazards before they encounter them.",
+      "Proper barricading and screening prevent falls into hoistways and protect the public. This is a critical SIF prevention control that requires daily confirmation.",
+  },
+
+  hoistway_access: {
+    id: "hoistway_access",
+    label: "Hoistway Access",
+    icon: "door-open",
+    color: "#EC4899", // pink-500
+    description:
+      "Hoistway entry procedures, barricading, stop switch verification, and door protocols",
+    keywords: [
+      "hoistway",
+      "barricade",
+      "stop switch",
+      "guardrail",
+      "door",
+      "peek",
+      "access",
+      "foot wedge",
+    ],
+    lookFor: [
+      "Barricades in place before hoistway access",
+      "Stop switch independently tested before entry",
+      "Guard rail properly installed",
+      "6-inch door peek protocol followed",
+      "Verification of elevator position before entry",
+      "No foot wedge used improperly",
+      "Top lobby secured with lock and hasp",
+    ],
+    violations: [
+      "Barricades not in place before hoistway access",
+      "Stop switch verification not performed",
+      "Improper guard rail installation",
+      "Failed 6-inch peek protocol at disconnect",
+      "Top lobby unsecured (lacking lock and hasp)",
+      "Foot wedge used improperly",
+      "No verification of car position",
+    ],
+    whyItMatters:
+      "Hoistway access is one of the most dangerous moments in elevator work. Workers must verify car position and test stop switches independently every time. Failure can result in fatal crush injuries.",
+  },
+
+  warehouse: {
+    id: "warehouse",
+    label: "Warehouse",
+    icon: "warehouse",
+    color: "#78716C", // stone-500
+    description:
+      "Warehouse conditions, storage, forklift operations, and material handling",
+    keywords: [
+      "warehouse",
+      "forklift",
+      "storage",
+      "spill",
+      "containment",
+      "lighting",
+      "material",
+    ],
+    lookFor: [
+      "Adequate lighting (LED preferred)",
+      "Spill kit available and stocked",
+      "Forklift certifications current",
+      "Forklift daily inspections performed",
+      "Proper glove sizes available",
+      "Clear path of travel maintained",
+      "Material stored properly (no blocked doors)",
+      "Oil containment adequate",
+    ],
+    violations: [
+      "Insufficient glove sizes for employees",
+      "Excess oil with limited containment",
+      "Lighting replacement needed",
+      "Doors blocked with material",
+      "Excess storage blocking paths",
+      "Path of travel not established",
+      "Forklift certifications expired",
+      "Sharp edges present on stored material",
+      "Spill kit needs upgrade",
+    ],
+    whyItMatters:
+      "Warehouse safety affects every worker who picks up materials. Proper storage, containment, and forklift safety prevent crush injuries, spills, and struck-by incidents.",
+  },
+
+  mechanical: {
+    id: "mechanical",
+    label: "Mechanical",
+    icon: "wrench",
+    color: "#0EA5E9", // sky-500
+    description:
+      "Mechanical equipment, material laydown, and equipment securing",
+    keywords: [
+      "mechanical",
+      "material",
+      "laydown",
+      "red tag",
+      "secured",
+      "equipment",
+    ],
+    lookFor: [
+      "Material laydown area organized",
+      "Equipment properly secured and red-tagged when out of service",
+      "Pre-rigging plan in place",
+      "Dynamic testing performed (UP/DOWN)",
+      "Job scope and site preparation complete",
+    ],
+    violations: [
+      "Material laydown disorganized",
+      "Equipment not secured or red-tagged",
+      "Pre-rigging plan not observed in field",
+      "Dynamic test UP/DOWN not tested",
+      "MOD site preparation incomplete",
+      "Job scope review not performed prior to job",
+    ],
+    whyItMatters:
+      "Organized mechanical areas prevent struck-by and caught-in hazards. Pre-rigging plans and dynamic testing are mandatory safety controls that must be verified before work begins.",
+  },
+
+  jumpers: {
+    id: "jumpers",
+    label: "Jumpers",
+    icon: "cable",
+    color: "#DC2626", // red-600
+    description: "Authorized jumper usage and electrical bypass procedures",
+    keywords: ["jumper", "bypass", "unauthorized", "electrical", "wire"],
+    lookFor: [
+      "Only authorized jumpers used",
+      "Jumper log maintained",
+      "Proper jumper wire type and gauge",
+      "Jumpers removed after use",
+    ],
+    violations: [
+      "Use of unauthorized jumpers",
+      "No jumper log maintained",
+      "Improper jumper wire type",
+      "Jumpers left in place after work completed",
+    ],
+    whyItMatters:
+      "Unauthorized jumpers bypass critical safety circuits and can cause unexpected car movement, leading to fatal crush injuries. Only approved jumper procedures may be used.",
   },
 };
 
@@ -366,12 +564,12 @@ export function getCategoryById(id: CategoryId): CategoryDefinition {
   return SAFETY_CATEGORIES[id];
 }
 
-export function getCategoryLabel(id: CategoryId): string {
-  return SAFETY_CATEGORIES[id]?.label ?? id;
+export function getCategoryLabel(id: string): string {
+  return (SAFETY_CATEGORIES as Record<string, CategoryDefinition>)[id]?.label ?? id;
 }
 
-export function getCategoryColor(id: CategoryId): string {
-  return SAFETY_CATEGORIES[id]?.color ?? "#6B7280";
+export function getCategoryColor(id: string): string {
+  return (SAFETY_CATEGORIES as Record<string, CategoryDefinition>)[id]?.color ?? "#6B7280";
 }
 
 export function getAllCategories(): CategoryDefinition[] {

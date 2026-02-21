@@ -6,7 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { SeverityBadge } from "@/components/ui/SeverityBadge";
 import { getSiteFindings, getSites, SiteFinding } from "@/lib/mockData";
 import { formatDistanceToNow, formatDate } from "@/lib/dateUtils";
-import { getCategoryLabel } from "@/lib/constructionCategories";
+import { getCategoryLabel } from "@/lib/categories";
 import {
   AlertTriangle,
   AlertCircle,
@@ -103,9 +103,9 @@ export default function FindingsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Findings</h1>
+          <h1 className="text-2xl font-bold text-gray-900">FPPe Findings</h1>
           <p className="text-gray-500 mt-1">
-            Track and manage safety issues across all sites
+            Track and manage safety findings across all branches
           </p>
         </div>
 

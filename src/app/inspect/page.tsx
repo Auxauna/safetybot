@@ -29,9 +29,9 @@ export default function InspectionsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Inspections</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Safety Blitz Assessments</h1>
             <p className="text-gray-500 mt-1">
-              View and manage all safety inspections
+              View and manage all Safety Blitz field evaluations
             </p>
           </div>
           <Link
@@ -39,7 +39,7 @@ export default function InspectionsPage() {
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Camera className="w-4 h-4" />
-            New Inspection
+            New Safety Blitz
           </Link>
         </div>
 
@@ -208,10 +208,10 @@ function InspectionsEmpty() {
         <ClipboardCheck className="w-8 h-8 text-gray-400" />
       </div>
       <h3 className="text-lg font-semibold text-gray-900">
-        No inspections yet
+        No assessments yet
       </h3>
       <p className="text-gray-500 mt-1 mb-6">
-        Start your first safety inspection to see it here
+        Start your first Safety Blitz assessment to see it here
       </p>
       <Link
         href="/inspect/new"

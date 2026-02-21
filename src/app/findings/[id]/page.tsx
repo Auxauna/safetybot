@@ -17,7 +17,7 @@ import {
   formatDueDate,
   isOverdue,
 } from "@/lib/dateUtils";
-import { getCategoryLabel } from "@/lib/constructionCategories";
+import { getCategoryLabel } from "@/lib/categories";
 import {
   ArrowLeft,
   Building2,
